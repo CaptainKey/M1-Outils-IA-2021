@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
-
+import numpy as np
 class LeNet(nn.Module):
     def __init__(self):
         super(LeNet,self).__init__() 
@@ -35,11 +35,18 @@ class LeNet(nn.Module):
         return x 
 
 if __name__ == '__main__':
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model = LeNet()
+
+    for name,value in model.named_parameters():
+        params = value.detach().numpy()
+        np.save(name,params)
+    model.to(device)
 
     pre_processing = transforms.Compose([
         transforms.ToTensor()
     ])
+
 
     # Chargement des donnees d entrainement
     set_entrainement = torchvision.datasets.CIFAR10(root='./cifar10',train=True,download=True,transform=pre_processing)
@@ -47,8 +54,8 @@ if __name__ == '__main__':
     set_test = torchvision.datasets.CIFAR10(root='./cifar10',train=False,download=True,transform=pre_processing)
 
 
-    load_entrainement = torch.utils.data.DataLoader(set_entrainement,batch_size=32,num_workers=2)
-    load_test = torch.utils.data.DataLoader(set_test,batch_size=32,num_workers=2)
+    load_entrainement = torch.utils.data.DataLoader(set_entrainement,batch_size=1,num_workers=2)
+    load_test = torch.utils.data.DataLoader(set_test,batch_size=1,num_workers=2)
 
     fonction_erreur = nn.CrossEntropyLoss()
 
@@ -63,9 +70,9 @@ if __name__ == '__main__':
 
             opti.zero_grad()
 
-            out = model(imgs)
+            out = model(imgs.to(device))
             
-            loss = fonction_erreur(out,labels)
+            loss = fonction_erreur(out,labels.to(device))
 
             loss.backward()
 
@@ -86,16 +93,3 @@ if __name__ == '__main__':
                 total += imgs.size(0)
                 ok += (prediction == labels).sum().item()
             print('Performance : {} %'.format((ok/total)*100))
-"""
-
-    Chat ou Chien 
-
-    out = [Chien, Chat]
-    out = [0.7, 0.2]
-
-    img 1 => label = Chat => [0,1]
-
-    out = [0.7,0.2]
-    label =  [0,1 ]
-
-"""
