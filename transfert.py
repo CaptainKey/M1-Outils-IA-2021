@@ -61,6 +61,13 @@ if __name__ == '__main__':
 
     # Création de l'instance de classe du modèle
     model = LeNet()
+    print(model)
+    for param in model.parameters():
+        param.requires_grad = False
+    model.dense3 = nn.Linear(84,20)
+
+    print(model)
+    exit(0)
     # Mise en place du model sur GPU
     model.to(device)
         
@@ -145,5 +152,5 @@ if __name__ == '__main__':
                 ok += (prediction == labels).sum().item()
             # Affichage résultat
             print('Performance  Epoch {} : {} %'.format(epoch,(ok/total)*100))
-            perf = (ok/total)*100)
+            perf = (ok/total)*100
             torch.save(model.state_dict(),'lenet_params{}_{}.pt'.format(perf,epoch))
