@@ -49,8 +49,8 @@ if __name__ == '__main__':
     set_test = torchvision.datasets.MNIST(root='./cifar10',train=False,download=True,transform=pre_processing)
 
     # DataLoader 
-    loader_entrainement = torch.utils.data.DataLoader(set_entrainement,batch_size=1,num_workers=2)
-    loader_test = torch.utils.data.DataLoader(set_test,batch_size=1,num_workers=2)
+    loader_entrainement = torch.utils.data.DataLoader(set_entrainement,batch_size=4,num_workers=2)
+    loader_test = torch.utils.data.DataLoader(set_test,batch_size=4,num_workers=2)
 
 
     # Sélection de l'unité de calcul
